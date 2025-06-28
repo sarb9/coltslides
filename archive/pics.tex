@@ -1,0 +1,111 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Lower bounds -- construction}
+    \begin{tcolorbox}[title=Lower bound construction, colback=gray!5, colframe=gray!60!black]
+        Let $\epsilon \in [0,1/2]$ and $\theta \in \sphere_1$ and define functions $f$ and $f_\theta$ by
+        \begin{align*}
+            f(x)        & = \epsilon + \frac{1}{2} \norm{x}^2\,,                                                                             \\
+            f_\theta(x) & = \begin{cases}
+                                f(x)                                                        & \text{if } \norm{\theta - x}^2 \geq 1 + 2 \epsilon \\
+                                \ip{\theta, x} - 1 + \sqrt{1 + 2\epsilon} \norm{\theta - x} & \text{otherwise} \,.
+                            \end{cases}
+        \end{align*}
+        Then $f_\theta$ is convex and minimized at $\theta$ and $\lip_{\ball_1}(f_\theta) \leq \sqrt{2 + 2\epsilon}$.
+    \end{tcolorbox}
+    % \begin{itemize}
+    %     \item All $f_\theta$~s are equal to each other (and $f$) in their domain except for a small ball.
+    %     \item Each $f_\theta$ achieve its minimum value in that ball.
+    %     \item $\ts$ can't distinguish $f_\theta\,$s by playing the minimizers.
+    % \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Upper bounds -- Decomposition Lemma}
+    \small
+    \begin{itemize}
+        \item With Prop 1 in place, it remains to bound IR.
+        \item The following lemma is tailored to bound the IR of $\ts$ by partitioning $\cF$.
+    \end{itemize}
+    \begin{tcolorbox}[title=Proposition 5 -- $\ts$-IR Decomposition,colback=blue!5!white,colframe=blue!50!black]
+        Suppose there exist $k$ and $m$ such that for all $\bar f \in \conv(\cF)$ there exists a disjoint union $\cF = \cup_{i=1}^m \cF_i$ of measurable sets
+        for which
+        \begin{align*}
+            \sup_{f \in \cF_i} (\bar f(x_f) - f(x_f)) \leq \alpha + \sqrt{\beta \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j,l \in \pair(k)} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2} \,,
+        \end{align*}
+        for all $i$, then $(\alpha, k(k-1)m\beta) \in \IR(\cF)$.
+    \end{tcolorbox}
+    \begin{itemize}
+        \item<1-> The supremum term is the worst case \emph{average} regret within $\cF_i$.
+        \item<2-> The infimum term is a kind of bound on the minimum amount of information obtained by $\ts$.
+        \item<3-> The price of $m$ comes from the same CS as in the multi-armed setting.
+    \end{itemize}
+\end{frame}
+\only<1-1>{
+    \begin{tikzpicture}
+        \begin{axis}[
+                view={45}{35},
+                width=8cm,height=6cm,
+                axis lines=center,
+                xlabel={$x$},ylabel={$y$},
+                xtick=\empty,
+                ytick=\empty,
+                ztick=\empty,
+                z axis line style={opacity=0},
+                domain=0:1, y domain=-180:180,   % r∈[0,1], φ in degrees
+                variable=r, variable y=phi,
+                samples=21, samples y=51,
+                colormap/viridis,
+            ]
+            \addplot3[
+                surf,
+                shader=flat,
+                draw=black!60,
+                opacity=0.85,
+            ]
+            (
+            {r*cos(phi)},
+            {r*sin(phi)},
+            {
+                    ( ((r*cos(phi))^2 + (r*sin(phi))^2) > 1 ) ? (NaN) :
+                    ( (((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2) >= \radtest ) ?
+                    ( \epsval + 0.5*((r*cos(phi))^2 + (r*sin(phi))^2) ) :
+                    ( \thetazero*(r*cos(phi)) + \thetaone*(r*sin(phi)) - 1 + \sqrtt*sqrt( ((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2 ) )
+                }
+            );
+        \end{axis}
+    \end{tikzpicture}
+}
+\only<2-2>{
+    \begin{tikzpicture}
+        \begin{axis}[
+                view={45}{90},
+                width=8cm,height=6cm,
+                axis lines=center,
+                xlabel={$x$},ylabel={$y$},
+                xtick=\empty,
+                ytick=\empty,
+                ztick=\empty,
+                z axis line style={opacity=0},
+                domain=0:1, y domain=-180:180,   % r∈[0,1], φ in degrees
+                variable=r, variable y=phi,
+                samples=21, samples y=51,
+                colormap/viridis,
+            ]
+            \addplot3[
+                surf,
+                shader=flat,
+                draw=black!60,
+                opacity=0.85,
+            ]
+            (
+            {r*cos(phi)},
+            {r*sin(phi)},
+            {
+                    ( ((r*cos(phi))^2 + (r*sin(phi))^2) > 1 ) ? (NaN) :
+                    ( (((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2) >= \radtest ) ?
+                    ( \epsval + 0.5*((r*cos(phi))^2 + (r*sin(phi))^2) ) :
+                    ( \thetazero*(r*cos(phi)) + \thetaone*(r*sin(phi)) - 1 + \sqrtt*sqrt( ((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2 ) )
+                }
+            );
+        \end{axis}
+    \end{tikzpicture}
+}

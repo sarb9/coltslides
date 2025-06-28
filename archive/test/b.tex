@@ -1,0 +1,42 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%-------- plot params ----------
+\newcommand\epsval{0.2}        % ε ∈ [0,1/2]
+\def\thetazero{1}              % θ_x component
+\def\thetaone{0}               % θ_y component
+\pgfmathsetmacro\radtest{1+2*\epsval}     % threshold 1+2ε
+\pgfmathsetmacro\sqrtt{sqrt(\radtest)}    % √(1+2ε)
+ 
+\begin{document}
+\begin{tikzpicture}
+    \begin{axis}[
+            view={45}{90},
+            width=11cm,height=8cm,
+            axis lines=center,
+            xlabel={$x$},ylabel={$y$},
+            xtick=\empty,ytick=\empty, ztick=\empty,
+            z axis line style={opacity=0},
+            domain=0:1, y domain=-180:180,   % r∈[0,1], φ in degrees
+            variable=r, variable y=phi,
+            samples=21, samples y=51,
+            colormap/viridis,
+        ]
+        \addplot3[
+            surf, shader=flat,
+            draw=black!60, opacity=0.85,
+        ]
+        (
+        {r*cos(phi)},
+        {r*sin(phi)},
+        {
+                ( ((r*cos(phi))^2 + (r*sin(phi))^2) > 1 ) ? (NaN) :
+                ( (((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2) >= \radtest ) ?
+                ( \epsval + 0.5*((r*cos(phi))^2 + (r*sin(phi))^2) ) :
+                ( \thetazero*(r*cos(phi)) + \thetaone*(r*sin(phi)) - 1 + \sqrtt*sqrt( ((r*cos(phi))-\thetazero)^2 + ((r*sin(phi))-\thetaone)^2 ) )
+            }
+        );
+    \end{axis}
+\end{tikzpicture}
+\end{document}
