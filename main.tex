@@ -101,7 +101,7 @@
         \item \textbf{Negative}:
               \begin{itemize}
                   \item TS can suffer \(\Omega(\exp(d))\) regret for general d-D convex losses.
-                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{O}(d^{1.5}\sqrt{n})\) for general stochastic \& adversarial BCO.
+                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{\Omega}(d^{1.5}\sqrt{n})\) for general stochastic \& adversarial BCO.
               \end{itemize}
               % \item \textbf{Take-away}: TS is great in 1-D / structured convex settings, but not in full \(d\)-D.
     \end{itemize}
@@ -184,21 +184,21 @@
     \small
     \begin{itemize}
         \item Let $x_g = \argmin_{x\in\cK} g(x)$. (analysis is really about $x_f$ and $f(x_f)$.)
-        \item Let $(X,f)$ have law $\pi \otimes \xi,$ and $\bar{f} = \E[f]$.
+        \item Let $(F_1, F_2) \sim \xi \otimes \xi$ and $\bar{f} = \E[F_1]$.
         \item Define
               \begin{align*}
-                  \Delta(\pi, \xi) = \E[\bar{f}(X) - f_\star]
-                  \quad \text{and} \quad \cI(\pi, \xi) = \E[(f(X) - \bar{f}(X))^2]\,.
+                  \Delta(\xi) = \E[\bar{f}(x_{F_1}) - F_1(x_{F_1})]
+                  \quad \text{and} \quad \cI(\xi) = \E[(F_1(x_{F_2}) - \bar{f}(X_{F_2}))^2]\,.
               \end{align*}
     \end{itemize}
     \begin{tcolorbox}[title=Generalized IR ,colback=green!5!white,colframe=green!50!black]
-        Define generalized information ratio associated with $\ts$ as
+        Define generalized information ratio associated with $\pi$ as
         \[
-            \IR(\cF) = \left\{(\alpha, \beta) \in \R_+^2 : \Delta(\pi_{\ts}, \xi) \leq \alpha + \sqrt{\beta \cI(\pi_{\ts}, \xi)}  \;,\forall \xi\right\} \,.
+            \IR(\cF) = \left\{(\alpha, \beta) \in \R_+^2 : \Delta(\xi) \leq \alpha + \sqrt{\beta \cI(\xi)}  \;,\forall \xi\in \cP(\cF) \right\} \,.
         \]
     \end{tcolorbox}
     \begin{itemize}
-        \item $(0,\beta) \in \IR(\cF) \Rightarrow \Delta(\pi_{\ts}, \xi)^2/\cI(\pi_{\ts}, \xi) \leq \beta$.
+        \item $(0,\beta) \in \IR(\cF) \Rightarrow \Delta(\xi)^2/\cI(\xi) \leq \beta$.
     \end{itemize}
 \end{frame}
 
@@ -210,12 +210,12 @@
         Suppose that $\cF \in \{\cF_{\pb\pl}, \cF_{\pb\pl\pr\pm}\}$ and $(\alpha, \beta) \in \IR(\cF)$.
         Then, the regret of $\ts$ is at most
         \begin{align*}
-            \BReg_n(\ts, \xi) \leq n \alpha + O\left(\sqrt{\beta n d \log(n \diam(\cK))}\right) \,.
+            \BReg_n(\ts, \xi_0) \leq n \alpha + O\left(\sqrt{\beta n d \log(n \diam(\cK))}\right) \,.
         \end{align*}
     \end{tcolorbox}
     \only<2-2>{It remains to bound the IR of $\ts$.}
     \uncover<3->{
-        \begin{tcolorbox}[title=Proposition 2 -- $\ts$-IR Decomposition,colback=blue!5!white,colframe=blue!50!black]
+        \begin{tcolorbox}[title=Proposition 2 -- $\ts$-IR Partitioning,colback=blue!5!white,colframe=blue!50!black]
             If $\exists k, m \in \mathbb{N} $ such that for all $\tilde f \in \conv(\cF)$ there is $\cF = \cup_{i=1}^m \cF_i$
             for which
             \begin{align*}
@@ -258,19 +258,19 @@
         Suppose that $d = 1$ and $\alpha \in (0,1)$. Then $(\alpha, 10^4 \ceil{\log(1/\alpha)}) \in \IR(\cF_{\pb\pl})$.
     \end{tcolorbox}
     \textbf{Proof sketch:}
-    \begin{itemize}
-        \item Use the decomposition lemma $\Rightarrow$ partition  based on $x_f$ and $f(x_f)$.
-        \item Analyze functions with similar gaps (average regret) in $\cF_i$:
+    \begin{enumerate}
+        \item Use the partitioning lemma $\Rightarrow$ partition  based on $x_f$ and $f(x_f)$.
+        \item Group functions with similar gaps (average regret) in $\cF_i$:
               \begin{enumerate}
                   \leftskip=4em % Add right padding of 2em
-                  \item[Similar gaps:] $\bar{f}(x_f) - f(x_f) \in [\epsilon, 2\epsilon]$,
-                  \item[$\bar{f}$ monotone:] $x_{\bar{f}} \leq x_f \Rightarrow $ $\bar{f}$ (begin 1-D is crucial here).
+                  \item[Similar gaps:] $\tilde{f}(x_f) - f(x_f) \in [\epsilon, 2\epsilon]$,
+                  \item[$\tilde{f}$ monotone:] $x_{\tilde{f}} \leq x_f \Rightarrow $ $\tilde{f}$ (begin 1-D is crucial here).
               \end{enumerate}
-        \item Prove that $\dis(\cF_i, k) \geq c^2\epsilon_i^2$
+        \item Prove that $\dis(\cF_i, k) \geq c^2\epsilon_i^2$:
               \[
-                  \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
+                  \dis(\cF_i, k) = \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
               \]
-    \end{itemize}
+    \end{enumerate}
 \end{frame}
 
 \begin{frame}{Upper bounds -- IR bound in 1-D}
@@ -284,16 +284,16 @@
         \item Fix $k=4, c\approx1/16$, suppose that
               \only<1>{
                   \begin{align*}
-                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2\,\,
-                      \,\,\Rightarrow f_j(x_{f_l}) - \tilde f(x_{f_l}) \leq c\epsilon_i, \forall j\neq l \in [4]\,.
+                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2
+                      \Rightarrow |f_j(x_{f_l}) - \tilde f(x_{f_l})| \leq c\epsilon_i, \forall j\neq l \in [4]\,.
                   \end{align*}}
               \only<2->{
                   \begin{align*}
                       %   \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2 \\
-                      \forall f_1,f_2,f_3,f_4 \in \cF_i,\,\,\, f_j(x_{f_l}) - \tilde f(x_{f_l}) \leq c\epsilon_i\,.
+                      \forall j\neq l \in[4],\,\,\, |f_j(x_{f_l}) - \tilde f(x_{f_l})| \leq c\epsilon_i\,.
                   \end{align*}}
-        \item \only<1>{WLOG, suppose that $x_{\bar{f}} \leq x_1\leq x_2 \leq x_3 \leq x_4$}
-              \only<2->{\textcolor{blue}{$f_i$} needs to be close to \textcolor{red}{$\bar{f}$}, at minimizers $x_j$ (double lines $||$) for $i\neq j$.}
+        \item \only<1>{WLOG, suppose that $x_{\tilde{f}} \leq x_1\leq x_2 \leq x_3 \leq x_4$, for $x_i \triangleq x_{f_i}$.}
+              \only<2->{\textcolor{blue}{$f_j$} needs to be close to \textcolor{red}{$\tilde{f}$}, at minimizers $x_{f_l}$ (double lines $||$) for $l \neq j$.}
     \end{itemize}
     \uncover<1->{
         \def\dotradius{0.65pt}
@@ -314,7 +314,7 @@
                     \node[anchor=west] at (1.8,1.1) {\textcolor{red}{$\tilde f$}};
 
                     \draw[dashed] (0, 0) -- (0,0.8);
-                    \node[anchor=north] at (0,0) {$x_{\bar{f}}$};
+                    \node[anchor=north] at (0,0) {$x_{\tilde{f}}$};
                     \fill[red] (0,0.8) circle (\dotradius); % small filled bullet
 
                     \draw[dashed, double, double distance=1pt] (\xoneo, 0) -- (\xoneo,\xoneyo);
@@ -358,14 +358,14 @@
 
                     % \tilde f - c\epsilon
                     \draw[dashed, thin] (-1.8, 0.85) --(1,0.9) -- (1.8,1.05);
-                    \node[anchor=east] at (-1.8,0.85) {\tiny $\bar{f} - c \epsilon$};
+                    \node[anchor=east] at (-1.8,0.85) {\tiny $\tilde{f} - c \epsilon$};
                     \draw[dashed, thin] (-1.8, 0.95) --(1,1) -- (1.8,1.15);
-                    \node[anchor=east] at (-1.8,0.95) {\tiny $\bar{f} + c \epsilon$};
+                    \node[anchor=east] at (-1.8,0.95) {\tiny $\tilde{f} + c \epsilon$};
 
                     \draw[dashed, thin] (-1.8, 0.3) --(1,0.35) -- (1.8,0.5);
-                    \node[anchor=east] at (-1.8,0.3) {\tiny $\bar{f} - 2\epsilon$};
+                    \node[anchor=east] at (-1.8,0.3) {\tiny $\tilde{f} - 2\epsilon$};
                     \draw[dashed, thin] (-1.8, 0.5) --(1,0.55) -- (1.8,0.7);
-                    \node[anchor=east] at (-1.8,0.5) {\tiny $\bar{f} - \epsilon$};
+                    \node[anchor=east] at (-1.8,0.5) {\tiny $\tilde{f} - \epsilon$};
                 }
 
                 % f_1 & f_2
@@ -383,7 +383,7 @@
                     \draw[dashed, double, double distance=1pt] (1.3, 0) -- (1.3,1.3);
                     \node[anchor=north] at (1.3,0) {$x_2 ?$};
                     \draw[red, thick] (1.3,0.5) ellipse (-.2em and 0.4em);
-                    \node[anchor=north east] at (1.3,0.35) {$\bar{f}(x_2) \ncong  f_4(x_2)$};
+                    \node[anchor=north east] at (1.3,0.35) {$\tilde{f}(x_2) \ncong  f_4(x_2)$};
                 }
 
                 % NEW bar f
@@ -404,14 +404,14 @@
                     \node[anchor=west] at (1.8,\newfythree) {\textcolor{red}{$\tilde f$}};
 
                     \draw[dashed, thin] (-1.8, \newfyone - \newfcepsilon) --(\newfxtwo,\newfytwo - \newfcepsilon) -- (1.8,\newfythree - \newfcepsilon);
-                    \node[anchor=east] at (-1.8,\newfyone - \newfcepsilon) {\tiny $\bar{f} - c \epsilon$};
+                    \node[anchor=east] at (-1.8,\newfyone - \newfcepsilon) {\tiny $\tilde{f} - c \epsilon$};
                     \draw[dashed, thin] (-1.8, \newfyone + \newfcepsilon) --(\newfxtwo,\newfytwo + \newfcepsilon) -- (1.8,\newfythree + \newfcepsilon);
-                    \node[anchor=east] at (-1.8,\newfyone + \newfcepsilon) {\tiny $\bar{f} + c \epsilon$};
+                    \node[anchor=east] at (-1.8,\newfyone + \newfcepsilon) {\tiny $\tilde{f} + c \epsilon$};
 
                     \draw[dashed, thin] (-1.8, \newfyone - 2*\newfepsilon) --(\newfxtwo,\newfytwo - 2*\newfepsilon) -- (1.8,\newfythree - 2*\newfepsilon);
-                    \node[anchor=east] at (-1.8,\newfyone - 2*\newfepsilon) {\tiny $\bar{f} - 2\epsilon$};
+                    \node[anchor=east] at (-1.8,\newfyone - 2*\newfepsilon) {\tiny $\tilde{f} - 2\epsilon$};
                     \draw[dashed, thin] (-1.8, \newfyone - \newfepsilon) --(\newfxtwo,\newfytwo - \newfepsilon) -- (1.8,\newfythree - \newfepsilon);
-                    \node[anchor=east] at (-1.8,\newfyone - \newfepsilon) {\tiny $\bar{f} - \epsilon$};
+                    \node[anchor=east] at (-1.8,\newfyone - \newfepsilon) {\tiny $\tilde{f} - \epsilon$};
 
                     \draw[blue] (-1.8, .18) -- (0,0.38) -- (1.8,1.1);
                     \node[anchor=east, blue] at (-1.8,.3) {$f_1$};
@@ -428,7 +428,7 @@
                     \node[anchor=north] at (.8,0) {$x_2$};
 
                     \only<7>{
-                        \node[anchor=south] at (-0.3,1) {so far by playing $x_i$ we observe $\bar{f}(x_i)$};
+                        \node[anchor=south] at (-0.3,1) {so far by playing $x_i$ we observe $\tilde{f}(x_i)$};
                     }
                 }
 
