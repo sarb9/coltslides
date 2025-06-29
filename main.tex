@@ -7,10 +7,15 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usepackage{xcolor}
 \usetikzlibrary{tikzmark, calc, fit}
+\usetikzlibrary{patterns} % needed for hatch patterns
 \usepackage{listings}
 \usepackage{mathtools}
 \usepackage{pgfplots}
+\usepackage{xcolor}  % usually already loaded by Beamer
+% \definecolor{mycreamy}{RGB}{153,76,0}  % define your own color
+% \setbeamercolor{structure}{fg=mycreamy}
 % ---------- algo / theorem helpers ----------
 \usepackage{algorithm}
 \usepackage{algpseudocode}     % nice pseudocode
@@ -96,7 +101,7 @@
         \item \textbf{Negative}:
               \begin{itemize}
                   \item TS can suffer \(\Omega(\exp(d))\) regret for general d-D convex losses.
-                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{O}(d^{1.5}\sqrt{n})\) for general adversarial BCO, through duality.
+                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{O}(d^{1.5}\sqrt{n})\) for general stochastic \& adversarial BCO.
               \end{itemize}
               % \item \textbf{Take-away}: TS is great in 1-D / structured convex settings, but not in full \(d\)-D.
     \end{itemize}
@@ -111,7 +116,7 @@
         \item<2-> At round \(t\):
               \begin{enumerate}
                   \item Learner plays \(X_t \in \cK\).
-                  \item Observes scalar loss \( Y_t \in \{0,1\}\)\footnote{The Bernoulli noise assumption is just for convenience.}.
+                  \item Observes scalar loss \( Y_t \in \{0,1\}\).\footnote{The Bernoulli noise assumption is just for convenience.}
               \end{enumerate}
         \item<3-> $\E\left[Y_t|X_1, Y_1, \cdots, X_t, f\right] = f(X_t)$, where $f \in \cF$ is convex.
         \item<4-> $\cA$ (learner) is a mapping from histories $\&$ prior to $\cK$.
@@ -135,7 +140,7 @@
             \State Prior \( \xi \) over convex losses.
             \For{\(t = 1,\dots, n\)}
             \State Sample \(f_t \sim \PP(f=\cdot|X_1, Y_1, \cdots, X_{t-1}, Y_{t-1})\)
-            \State Play \( x_t \in \arg\min_{x\in\cK} f_t(x) \) and observe $Y_t$
+            \State Play \( X_t \in \arg\min_{x\in\cK} f_t(x) \) and observe $Y_t$
             \EndFor
         \end{algorithmic}
     \end{algorithm}
@@ -178,7 +183,7 @@
     \vspace{0.5em}
     \small
     \begin{itemize}
-        \item Let $x_g = \argmin_{x\in\cK} g(x)$.
+        \item Let $x_g = \argmin_{x\in\cK} g(x)$. (analysis is really about $x_f$ and $f(x_f)$.)
         \item Let $(X,f)$ have law $\pi \otimes \xi,$ and $\bar{f} = \E[f]$.
         \item Define
               \begin{align*}
@@ -211,11 +216,11 @@
     \only<2-2>{It remains to bound the IR of $\ts$.}
     \uncover<3->{
         \begin{tcolorbox}[title=Proposition 2 -- $\ts$-IR Decomposition,colback=blue!5!white,colframe=blue!50!black]
-            If $\exists k, m \in \mathbb{N} $ such that for all $\bar f \in \conv(\cF)$ there is $\cF = \cup_{i=1}^m \cF_i$
+            If $\exists k, m \in \mathbb{N} $ such that for all $\tilde f \in \conv(\cF)$ there is $\cF = \cup_{i=1}^m \cF_i$
             for which
             \begin{align*}
-                \sup_{f \in \cF_i} (\bar f(x_f) - f(x_f)) \leq \alpha + \sqrt{\beta
-                \underbrace{\inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2}_{\dis(\cF_i, k)}
+                \sup_{f \in \cF_i} (\tilde f(x_f) - f(x_f)) \leq \alpha + \sqrt{\beta
+                \underbrace{\inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2}_{\dis(\cF_i, k)}
                 } \,,
             \end{align*}
             for all $i$, then $(\alpha, k(k-1)m\beta) \in \IR(\cF)$.
@@ -263,7 +268,7 @@
               \end{enumerate}
         \item Prove that $\dis(\cF_i, k) \geq c^2\epsilon_i^2$
               \[
-                  \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
+                  \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
               \]
     \end{itemize}
 \end{frame}
@@ -274,35 +279,84 @@
     \begin{itemize}
         % \item Prove that $\dis(\cF_i, k) \geq c^2\epsilon_i^2$
         %       \[
-        %           \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
+        %           \inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \geq c^2\epsilon_i^2\,.
         %       \]
         \item Fix $k=4, c\approx1/16$, suppose that
               \only<1>{
                   \begin{align*}
-                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2 \leq c^2\epsilon_i^2 \\
-                      \Rightarrow \forall f_1,f_2,f_3,f_4 \in \cF_i,\,\,\, f_j(x_{f_l}) - \bar f(x_{f_l}) \leq c\epsilon_i\,.
+                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2\,\,
+                      \,\,\Rightarrow f_j(x_{f_l}) - \tilde f(x_{f_l}) \leq c\epsilon_i, \forall j\neq l \in [4]\,.
                   \end{align*}}
               \only<2->{
                   \begin{align*}
-                      %   \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \bar f(x_{f_l}))^2 \leq c^2\epsilon_i^2 \\
-                      \forall f_1,f_2,f_3,f_4 \in \cF_i,\,\,\, f_j(x_{f_l}) - \bar f(x_{f_l}) \leq c\epsilon_i\,.
+                      %   \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2 \\
+                      \forall f_1,f_2,f_3,f_4 \in \cF_i,\,\,\, f_j(x_{f_l}) - \tilde f(x_{f_l}) \leq c\epsilon_i\,.
                   \end{align*}}
-        \item WLOG, suppose that $x_{\bar{f}}, x_1\leq x_2 \leq x_3 \leq x_4$
+        \item \only<1>{WLOG, suppose that $x_{\bar{f}} \leq x_1\leq x_2 \leq x_3 \leq x_4$}
+              \only<2->{\textcolor{blue}{$f_i$} needs to be close to \textcolor{red}{$\bar{f}$}, at minimizers $x_j$ (double lines $||$) for $i\neq j$.}
     \end{itemize}
-    \uncover<2->{
+    \uncover<1->{
+        \def\dotradius{0.65pt}
+        \def\xoneo{0.3}
+        \def\xoneyo{0.2}
+        \def\xtwoo{0.5}
+        \def\xtwoyo{0.32}
+        \def\xthreeo{1.1}
+        \def\xthreeyo{0.3}
+        \def\xforo{1.4}
+        \def\xforyo{0.45}
         \begin{figure}[h!]
             \begin{tikzpicture}[scale=3]
+
+                % original bar f
+                \uncover<1>{
+                    \draw[thick, red] (-1.8, 1.2) -- (-1, 1) -- (0,0.8) -- (1.3,0.95) -- (1.8,1.2);
+                    \node[anchor=west] at (1.8,1.1) {\textcolor{red}{$\tilde f$}};
+
+                    \draw[dashed] (0, 0) -- (0,0.8);
+                    \node[anchor=north] at (0,0) {$x_{\bar{f}}$};
+                    \fill[red] (0,0.8) circle (\dotradius); % small filled bullet
+
+                    \draw[dashed, double, double distance=1pt] (\xoneo, 0) -- (\xoneo,\xoneyo);
+                    \node[anchor=north] at (\xoneo,0) {$x_1$};
+                    \fill[blue] (\xoneo,\xoneyo) circle (\dotradius); % small filled bullet
+
+                    \draw[dashed, double, double distance=1pt] (\xtwoo, 0) -- (\xtwoo,\xtwoyo);
+                    \node[anchor=north] at (\xtwoo,0) {$x_2$};
+                    \fill[blue] (\xtwoo,\xtwoyo) circle (\dotradius); % small filled bullet
+
+                    \draw[dashed, double, double distance=1pt] (\xthreeo, 0) -- (\xthreeo,\xthreeyo);
+                    \node[anchor=north] at (\xthreeo,0) {$x_3$};
+                    \fill[blue] (\xthreeo,\xthreeyo) circle (\dotradius); % small filled bullet
+
+                    \draw[dashed, double, double distance=1pt] (\xforo, 0) -- (\xforo,\xforyo);
+                    \node[anchor=north] at (\xforo,0) {$x_4$};
+                    \fill[blue] (\xforo,\xforyo) circle (\dotradius); % small filled bullet
+
+                    % \draw[pattern=crosshatch] (0,0) rectangle (3,2);
+
+                    \draw[thick, blue, dashed] (-1.5, 1.2) -- (-0.5, 0.4) -- (0, 0.35);
+                    \draw[thick, blue] (0, 0.35) -- (\xtwoo,\xtwoyo) -- (1.3,0.8) -- (1.8,1.25);
+                    \node[anchor=east] at (-1.5,1.2) {\textcolor{blue}{$f_2$}};
+
+                    \draw[thin, dashed, red] (0,0.35) -- (1.3,0.5) -- (1.8,.75);
+                    \node[anchor=west] at (1.8,.75) {\textcolor{red}{\tiny $\tilde f - \epsilon$}};
+                    \draw[thin, dashed, red] (0,0.1) -- (1.3,0.25) -- (1.8,.5);
+                    \node[anchor=west] at (1.8,.5) {\textcolor{red}{\tiny $\tilde f - 2\epsilon$}};
+                }
                 % bar f
-                \draw[thick, red] (-1.8, 0.9) --(1,0.95) -- (1.8,1.1);
-                \node[anchor=west] at (1.8,1.1) {\textcolor{red}{$\bar f$}};
-
-                \draw[thick, dashed] (-1.8, 0) -- (-1.8,1.3);
-                \node[anchor=north] at (-1.8,0) {$x_1$};
-                \draw[thick, dashed] (1.8, 0) -- (1.8,1.3);
-                \node[anchor=north] at (1.8,0) {$x_4$};
-
-                % \bar f - c\epsilon
                 \uncover<2->{
+                    \draw[double, double distance=1pt] (-1.8, 0) -- (-1.8,1.3);
+                    \node[anchor=north] at (-1.8,0) {$x_1$};
+                    \draw[double, double distance=1pt] (1.8, 0) -- (1.8,1.3);
+                    \node[anchor=north] at (1.8,0) {$x_4$};
+                }
+                \uncover<2-5>{
+                    \draw[thick, red] (-1.8, 0.9) --(1,0.95) -- (1.8,1.1);
+                    \node[anchor=west] at (1.8,1.1) {\textcolor{red}{$\tilde f$}};
+
+
+                    % \tilde f - c\epsilon
                     \draw[dashed, thin] (-1.8, 0.85) --(1,0.9) -- (1.8,1.05);
                     \node[anchor=east] at (-1.8,0.85) {\tiny $\bar{f} - c \epsilon$};
                     \draw[dashed, thin] (-1.8, 0.95) --(1,1) -- (1.8,1.15);
@@ -315,29 +369,72 @@
                 }
 
                 % f_1 & f_2
-                \uncover<3->{
+                \uncover<3-5>{
                     \draw[thick, blue] (-1.8, .4) -- (-1,0.45) -- (1.8,1.08);
                     \node[anchor=east, blue] at (-1.8,.4) {$f_1$};
                 }
 
-                \uncover<4->{
-                    \draw[thick, blue] (-1.8, .86) -- (1,0.6) -- (1.8,.6);
-                    \node[anchor=west, blue] at (1.8,.6) {$f_4$};
+                \uncover<4-5>{
+                    \draw[thick, blue] (-1.8, .86) -- (-0.8,0.6) -- (1.8,.55);
+                    \node[anchor=west, blue] at (1.8,.55) {$f_4$};
                 }
 
-                \uncover<5->{
-                    \draw[thick, dashed] (-.6, 0) -- (-0.6,1.3);
-                    \node[anchor=north] at (-.6,0) {$x_2 ?$};
+                \uncover<5-5>{
+                    \draw[dashed, double, double distance=1pt] (1.3, 0) -- (1.3,1.3);
+                    \node[anchor=north] at (1.3,0) {$x_2 ?$};
+                    \draw[red, thick] (1.3,0.5) ellipse (-.2em and 0.4em);
+                    \node[anchor=north east] at (1.3,0.35) {$\bar{f}(x_2) \ncong  f_4(x_2)$};
                 }
 
-                \uncover<6->{
-                    \draw[thick, blue] (-1.8, .86) -- (-0.6,0.4) -- (1.8,1.05);
-                    \node[anchor=east, blue] at (-0.68,.4) {$f_2$};
+                % NEW bar f
+                \uncover<6->
+                {
+                    \only<6>{
+                        \node[anchor=south] at (0,1) {let's change it a bit...};
+                    }
+
+                    \def\newfyone{0.65}
+                    \def\newfytwo{0.7}
+                    \def\newfythree{1.1}
+                    \def\newfxtwo{0.9}
+                    \def\newfcepsilon{0.05}
+                    \def\newfepsilon{0.3}
+
+                    \draw[thick, red] (-1.8, \newfyone) --(\newfxtwo,\newfytwo) -- (1.8,\newfythree);
+                    \node[anchor=west] at (1.8,\newfythree) {\textcolor{red}{$\tilde f$}};
+
+                    \draw[dashed, thin] (-1.8, \newfyone - \newfcepsilon) --(\newfxtwo,\newfytwo - \newfcepsilon) -- (1.8,\newfythree - \newfcepsilon);
+                    \node[anchor=east] at (-1.8,\newfyone - \newfcepsilon) {\tiny $\bar{f} - c \epsilon$};
+                    \draw[dashed, thin] (-1.8, \newfyone + \newfcepsilon) --(\newfxtwo,\newfytwo + \newfcepsilon) -- (1.8,\newfythree + \newfcepsilon);
+                    \node[anchor=east] at (-1.8,\newfyone + \newfcepsilon) {\tiny $\bar{f} + c \epsilon$};
+
+                    \draw[dashed, thin] (-1.8, \newfyone - 2*\newfepsilon) --(\newfxtwo,\newfytwo - 2*\newfepsilon) -- (1.8,\newfythree - 2*\newfepsilon);
+                    \node[anchor=east] at (-1.8,\newfyone - 2*\newfepsilon) {\tiny $\bar{f} - 2\epsilon$};
+                    \draw[dashed, thin] (-1.8, \newfyone - \newfepsilon) --(\newfxtwo,\newfytwo - \newfepsilon) -- (1.8,\newfythree - \newfepsilon);
+                    \node[anchor=east] at (-1.8,\newfyone - \newfepsilon) {\tiny $\bar{f} - \epsilon$};
+
+                    \draw[blue] (-1.8, .18) -- (0,0.38) -- (1.8,1.1);
+                    \node[anchor=east, blue] at (-1.8,.3) {$f_1$};
+
+                    \draw[blue] (-1.8, .68) -- (1.8,.65);
+                    \node[anchor=west, blue] at (1.8,.64) {$f_4$};
                 }
+
 
                 \uncover<7->{
-                    \draw[thick, dashed] (+1, 0) -- (1,1.3);
-                    \node[anchor=north] at (1,0) {$x_3 \times$};
+                    \draw[thick, blue] (-1.8, .86) -- (0.8,0.3) -- (1.8,1.05);
+                    \node[anchor=north west, blue] at (0.8,.3) {$f_2$};
+                    \draw[double, double distance=1pt] (.8, 0) -- (0.8,1.3);
+                    \node[anchor=north] at (.8,0) {$x_2$};
+
+                    \only<7>{
+                        \node[anchor=south] at (-0.3,1) {so far by playing $x_i$ we observe $\bar{f}(x_i)$};
+                    }
+                }
+
+                \uncover<8->{
+                    \draw[double, double distance=1pt,thick, dashed] (-0.7, 0) -- (-0.7,1.3);
+                    \node[anchor=north] at (-0.7,0) {$x_3?$};
                 }
 
                 %axis
@@ -411,32 +508,59 @@
         \]
         for all policies $\pi$ on $K$.
     \end{tcolorbox}
-    % \begin{itemize}
-    %     \item Construction: hide a sharp “valley’’ in a random direction, $\cK = \ball_1$.
-    %     \item The second lower bound shows that for general convex losses in $\R^d$ the classical info-ratio machinery cannot give regret better than \(\widetilde{O}(d^{1.5}\sqrt{n})\).
-    % \end{itemize}
+    \alert{Lower bound 2} shows that for general convex losses in $\R^d$ the \textbf{classical info-ratio machinery} cannot give regret better than the known \(\widetilde{O}(d^{1.5}\sqrt{n})\).
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Lower bounds -- construction}
-    \begin{itemize}
-        \item $f(x)= \epsilon + \frac{1}{2} \norm{x}^2$, a simple bowl shape function in $\ball_1$,
-        \item $f_\theta$ which is the largest convex function $g$ that is smaller than $f$, and $g(\theta) = 0$.
-        \item $\xi$ is the \emph{uniform} prior over $f_\theta$. ($\theta \sim \text{unif}(\sphere_1)$)
-    \end{itemize}
-    \begin{itemize}
-        \item $\ts$ lower bound:
-              \begin{enumerate}
-                  \item The ``perimeter'' of these valleys gets smaller exponentially with $d$.
-                  \item $\ts$ only plays on the surface where the minimizers are.
-                  \item $\ts$ will suffer $O(\exp(d))$ regret.
-              \end{enumerate}
-        \item IR lower bound:
-              \begin{enumerate}
-                  \item Both $\delta$ and $\cI$ of a point $x \in \ball_1$ are a function of its radius $r$.
-                  \item Optimize for $r$.
-              \end{enumerate}
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.7\textwidth}
+            \begin{itemize}
+                \item Idea:
+                      \begin{enumerate}
+                          \leftskip=-1em % Add right padding of 2em
+                          \item All \textcolor{blue}{$f_\theta$}$\sim \xi$ are mostly equal to a fixed \textcolor{orange}{$f$} on $\ball_1$.
+                          \item Uniform prior and no noise!
+                      \end{enumerate}
+                \item $\ts$ lower bound:
+                      \begin{enumerate}
+                          \leftskip=-1em % Add right padding of 2em
+                          \item $\ts$ plays on the ``perimeter'' $\sphere_1$ where the minimizers are.
+                          \item Suffers constant regret for $\exp(d)$ rounds.
+                      \end{enumerate}
+                \item IR lower bound:
+                      \begin{enumerate}
+                          \leftskip=-1em % Add right padding of 2em
+                          \item Radial symmetry.
+                          \item Optimize for $r$ in $\frac{\Delta(r)^2}{\cI(r)}$:
+                                \begin{enumerate}
+                                    \leftskip=-1em % Add right padding of 2em
+                                    \item Closer to $0$, \textcolor{red}{very low inf.} with \textcolor{green!70!black}{good prob}.
+                                    \item Closer to $\sphere_1$, \textcolor{green!70!black}{high inf.} with \textcolor{red}{very low prob.}
+                                \end{enumerate}
+                      \end{enumerate}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.3\textwidth}
+            \scalebox{0.4}{
+                \includegraphics[width=10cm]{biconjugate}
+            }
+            \\
+            \scalebox{0.4}{
+                \begin{tikzpicture}
+                    \draw[thick,fill=black!10!white] (0,0) circle (3);
+                    \draw[thick,red] (3,0) ellipse (3 and 0.8);
+                    \draw[fill=black,draw=none] (0,0) circle (2pt);
+                    \draw (0,0) edge[-latex] node[below] {$\theta$} (3,0);
+                    \draw (0,0) edge[-latex] node[below] {$\theta$} (3,0);
+                    \node at (-2,-1) {$\cK = \ball_1$};
+                    \node[draw=red,thick] at (3,-1.5) {$C_\theta = \{x : f_\theta(x) \neq f(x)\}$};
+                    \draw[dotted,thick] (0,0) circle (1);
+                    \draw[dotted,thick] (0,0) circle (0.5);
+                \end{tikzpicture}
+            }
+        \end{column}
+    \end{columns}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -451,7 +575,7 @@
         \item \textbf{Negative}:
               \begin{itemize}
                   \item TS can suffer \(\Omega(\exp(d))\) regret for general d-D convex losses.
-                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{O}(d^{1.5}\sqrt{n})\) for general adversarial BCO.
+                  \item Classical info-ratio tricks \(\Rightarrow\) no better than \(\widetilde{O}(d^{1.5}\sqrt{n})\) for general stochastic \& adversarial BCO.
               \end{itemize}
               % \item \textbf{Take-away}: TS is great in 1-D / structured convex settings, but not in full \(d\)-D.
     \end{itemize}
