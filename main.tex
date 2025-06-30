@@ -112,7 +112,7 @@
     \begin{itemize}
         \item Convex action set \( \cK \subset \mathbb{R}^d \).
         \item $\cF$ be a set of convex functions from $\cK$ to $[0,1]$.
-        \item $\xi$ is a known prior on $\cF$.
+        \item $\xi_0$ is a known prior on $\cF$.
         \item<2-> At round \(t\):
               \begin{enumerate}
                   \item Learner plays \(X_t \in \cK\).
@@ -122,7 +122,7 @@
         \item<4-> $\cA$ (learner) is a mapping from histories $\&$ prior to $\cK$.
         \item<5-> \textbf{Bayesian Regret}
               \[
-                  \BReg_n(\cA, \xi) =
+                  \BReg_n(\cA, \xi_0) =
                   \E\left[
                       \sup_{x \in \cK}
                       \sum_{t=1}^n (f(X_t) - f(x))
@@ -147,7 +147,7 @@
     \begin{itemize}
         \item Our analysis studies how
               \[
-                  \BReg^{\ts}(\cF) = \sup_{\xi \in \cP(\cF)} \BReg_n(\ts, \xi)\,,
+                  \BReg^{\ts}(\cF) = \sup_{\xi_0 \in \cP(\cF)} \BReg_n(\ts, \xi_0)\,,
               \]
               behaves for various natural classes of convex functions $\cF$.
     \end{itemize}
@@ -179,43 +179,55 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Upper bounds -- analysis}
-    (Generalized) \textbf{Information Ratio (IR)}
+    (Generalized) \textbf{Information Ratio ($\IR$)}
     \vspace{0.5em}
     \small
     \begin{itemize}
         \item Let $x_g = \argmin_{x\in\cK} g(x)$. (analysis is really about $x_f$ and $f(x_f)$.)
-        \item Let $(F_1, F_2) \sim \xi \otimes \xi$ and $\bar{f} = \E[F_1]$.
+        \item Let $(X, F) \sim \pi \otimes \xi$ and $\bar{f} = \E[F]$.
         \item Define
               \begin{align*}
-                  \Delta(\xi) = \E[\bar{f}(x_{F_1}) - F_1(x_{F_1})]
-                  \quad \text{and} \quad \cI(\xi) = \E[(F_1(x_{F_2}) - \bar{f}(X_{F_2}))^2]\,.
+                  \Delta(\pi, \xi) = \E[\bar{f}(X) - F(x_{F})]
+                  \quad \text{and} \quad \cI(\xi) = \E[(F(X) - \bar{f}(X))^2]\,.
               \end{align*}
+        \item If $\pi_\ts$ is played, then $(X, F) = (x_{F_1}, F_2)$, where $(F_1, F_2) \sim \xi \otimes \xi$.
     \end{itemize}
-    \begin{tcolorbox}[title=Generalized IR ,colback=green!5!white,colframe=green!50!black]
-        Define generalized information ratio associated with $\pi$ as
+    \begin{tcolorbox}[title=Generalized $\IR$ for $\ts$,colback=green!5!white,colframe=green!50!black]
+        Define generalized information associated with \alert{$\ts$} as the set of pairs
         \[
-            \IR(\cF) = \left\{(\alpha, \beta) \in \R_+^2 : \Delta(\xi) \leq \alpha + \sqrt{\beta \cI(\xi)}  \;,\forall \xi\in \cP(\cF) \right\} \,.
+            \IR_\ts(\cF) = \left\{(\alpha, \beta) \in \R_+^2 : \Delta(\pi_\ts, \xi) \leq \alpha + \sqrt{\beta \cI(\pi_\ts, \xi)}  \;,\forall \xi\in \cP(\cF) \right\} \,,
         \]
     \end{tcolorbox}
     \begin{itemize}
-        \item $(0,\beta) \in \IR(\cF) \Rightarrow \Delta(\xi)^2/\cI(\xi) \leq \beta$.
+        \item $(0,\beta) \in \IR_\ts(\cF) \Rightarrow \Delta(\pi_\ts, \xi)^2/\cI(\pi_\ts, \xi) \leq \beta$.
     \end{itemize}
+    \only<2->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \draw[red, ultra thick, rounded corners]
+            ([yshift=2pt]$(current page.center)+(-5.5,-2)$)
+            rectangle
+            ([yshift=-2pt]$(current page.center)+(-4,-2.7)$);
+            \node[anchor=north, red, fill=red!10!white] at
+            ([yshift=2pt]$(current page.center)+(-4.75,-2.9)$)
+            {only a function of $\cF$};
+        \end{tikzpicture}
+    }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Upper bounds -- regret \&\ IR}
+\begin{frame}{Upper bounds -- regret \&\ $\IR$}
     \small
-    \begin{tcolorbox}[title=Proposition 1 -- regret bound through IR,colback=blue!5!white,colframe=blue!50!black]
-        Suppose that $\cF \in \{\cF_{\pb\pl}, \cF_{\pb\pl\pr\pm}\}$ and $(\alpha, \beta) \in \IR(\cF)$.
+    \begin{tcolorbox}[title=Proposition 1 -- regret bound through $\IR_\ts$,colback=blue!5!white,colframe=blue!50!black]
+        Suppose that $\cF \in \{\cF_{\pb\pl}, \cF_{\pb\pl\pr\pm}\}$ and $(\alpha, \beta) \in \IR_\ts(\cF)$.
         Then, the regret of $\ts$ is at most
         \begin{align*}
             \BReg_n(\ts, \xi_0) \leq n \alpha + O\left(\sqrt{\beta n d \log(n \diam(\cK))}\right) \,.
         \end{align*}
     \end{tcolorbox}
-    \only<2-2>{It remains to bound the IR of $\ts$.}
+    \only<2-2>{It remains to find a pair $(\alpha, \beta) \in \IR_\ts$.}
     \uncover<3->{
-        \begin{tcolorbox}[title=Proposition 2 -- $\ts$-IR Partitioning,colback=blue!5!white,colframe=blue!50!black]
+        \begin{tcolorbox}[title=Proposition 2 -- $\IR_\ts$ Partitioning,colback=blue!5!white,colframe=blue!50!black]
             If $\exists k, m \in \mathbb{N} $ such that for all $\tilde f \in \conv(\cF)$ there is $\cF = \cup_{i=1}^m \cF_i$
             for which
             \begin{align*}
@@ -223,7 +235,7 @@
                 \underbrace{\inf_{f_1,\ldots,f_k \in \cF_i} \sum_{j\neq l \in [k]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2}_{\dis(\cF_i, k)}
                 } \,,
             \end{align*}
-            for all $i$, then $(\alpha, k(k-1)m\beta) \in \IR(\cF)$.
+            for all $i$, then $(\alpha, k(k-1)m\beta) \in \IR_\ts(\cF)$.
         \end{tcolorbox}
         \only<4->{
             \begin{tikzpicture}[remember picture, overlay]
@@ -252,10 +264,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Upper bounds -- IR bound in 1-D}
+\begin{frame}{Upper bounds -- $\IR_\ts$ in 1-D}
     \small
-    \begin{tcolorbox}[title=Theorem 3 -- IR bound for 1-D,colback=blue!5!white,colframe=blue!50!black]
-        Suppose that $d = 1$ and $\alpha \in (0,1)$. Then $(\alpha, 10^4 \ceil{\log(1/\alpha)}) \in \IR(\cF_{\pb\pl})$.
+    \begin{tcolorbox}[title=Theorem 3 -- $\IR_\ts$ in 1-D,colback=blue!5!white,colframe=blue!50!black]
+        Suppose that $d = 1$ and $\alpha \in (0,1)$. Then $(\alpha, 10^4 \ceil{\log(1/\alpha)}) \in \IR_\ts(\cF_{\pb\pl})$.
     \end{tcolorbox}
     \textbf{Proof sketch:}
     \begin{enumerate}
@@ -273,7 +285,7 @@
     \end{enumerate}
 \end{frame}
 
-\begin{frame}{Upper bounds -- IR bound in 1-D}
+\begin{frame}{Upper bounds -- $\IR$ bound in 1-D}
     \small
     \textbf{Proof sketch:}(proof by contradiction)
     \begin{itemize}
@@ -284,7 +296,7 @@
         \item Fix $k=4, c\approx1/16$, suppose that
               \only<1>{
                   \begin{align*}
-                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2
+                      \inf_{f_1,f_2,f_3,f_4 \in \cF_i} \sum_{j\neq l \in [4]} (f_j(x_{f_l}) - \tilde f(x_{f_l}))^2 \leq c^2\epsilon_i^2 \\
                       \Rightarrow |f_j(x_{f_l}) - \tilde f(x_{f_l})| \leq c\epsilon_i, \forall j\neq l \in [4]\,.
                   \end{align*}}
               \only<2->{
@@ -450,9 +462,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Upper bounds -- IR bound in d-D}
+\begin{frame}{Upper bounds -- $\IR$ bound in d-D}
     \small
-    \begin{tcolorbox}[title=Theorem 7 -- IR bound in d-D,colback=blue!5!white,colframe=blue!50!black]
+    \begin{tcolorbox}[title=Theorem 7 -- $\IR$ bound in d-D,colback=blue!5!white,colframe=blue!50!black]
         $(\alpha, \beta \ceil{\log(1/\alpha)}) \in \IR(\cF_{\pb\pl\pr\pm})$ whenever $\alpha \in (0,1)$ and
         \begin{align*}
             \BReg^{\ts}(\cF_{\pb\pl\pr\pm})\;=\; \widetilde{O}\!\bigl(d^{2.5}\sqrt{n}\bigr)\,.
@@ -528,7 +540,7 @@
                           \item $\ts$ plays on the ``perimeter'' $\sphere_1$ where the minimizers are.
                           \item Suffers constant regret for $\exp(d)$ rounds.
                       \end{enumerate}
-                \item IR lower bound:
+                \item $\IR$ lower bound:
                       \begin{enumerate}
                           \leftskip=-1em % Add right padding of 2em
                           \item Radial symmetry.
