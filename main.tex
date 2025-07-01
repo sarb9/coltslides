@@ -192,7 +192,11 @@
               \end{align*}
     \end{itemize}
     \begin{tcolorbox}[title=Generalized IR ,colback=green!5!white,colframe=green!50!black]
-        Define generalized information ratio associated with $\pi$ as
+        A generalized information ratio associated with $\cF$ is $(\alpha, \beta) \in \R_+^2$ such that
+        \[
+        \Delta(\xi) \leq \alpha + \sqrt{\beta \cI(\xi)}  \;,\forall \xi\in \cP(\cF)\,.
+        \]
+        We let
         \[
             \IR(\cF) = \left\{(\alpha, \beta) \in \R_+^2 : \Delta(\xi) \leq \alpha + \sqrt{\beta \cI(\xi)}  \;,\forall \xi\in \cP(\cF) \right\} \,.
         \]
@@ -264,7 +268,7 @@
               \begin{enumerate}
                   \leftskip=4em % Add right padding of 2em
                   \item[Similar gaps:] $\tilde{f}(x_f) - f(x_f) \in [\epsilon, 2\epsilon]$,
-                  \item[$\tilde{f}$ monotone:] $x_{\tilde{f}} \leq x_f \Rightarrow $ $\tilde{f}$ (begin 1-D is crucial here).
+                  \item[$\tilde{f}$ monotone:] $x_{\tilde{f}} \leq x_f \Rightarrow $ $\tilde{f}$ (being 1-D is crucial here).
               \end{enumerate}
         \item Prove that $\dis(\cF_i, k) \geq c^2\epsilon_i^2$:
               \[
